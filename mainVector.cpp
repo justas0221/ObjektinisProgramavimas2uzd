@@ -34,9 +34,8 @@ int main()
     string skaiciavimoBudas; // Kintamasis, kuriame saugomas vartotojo pasirinkimas, kaip skaiciuoti galutini bala, naudojant vidurki ar mediana
     int tarpai;
     bool teisingasIvedimas;
-    int i = 0, j;
+    int i = 0, j, parinktis, studentuKiekis;
     char testiPrograma;
-    int parinktis;
 
     srand(time(0));
 
@@ -60,6 +59,21 @@ int main()
         exit(0);
     }
 
+    do // Prasome studento ivesti skaiciu, nuo kurio priklausys, kaip bus vykdoma programa
+    {
+        cout << "Iveskite norima studentu kieki (nuo 1 iki 10 imtinai): "; cin >> studentuKiekis;
+
+        teisingasIvedimas = true;
+
+        if (studentuKiekis < 1 || studentuKiekis > 10 || cin.peek() != '\n')
+        {
+            teisingasIvedimas = false;
+            cout << "Klaidingi duomenys. Iveskite skaiciu nuo 1 iki 10 imtinai." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    } while (!teisingasIvedimas);
+
     do
     {
         cout << "Ka norite naudoti galutinio balo skaiciavimui, pazymiu vidurki ar mediana? (Irasykite \'V\' arba \'M\') "; cin >> skaiciavimoBudas; // Vartotojo prasome ivesti vidurkio skaiciavimo buda tol, kol jis ives reikiama simboli
@@ -77,9 +91,10 @@ int main()
         }
     } while (!teisingasIvedimas);
 
-    do // Ciklas, einantis per kiekviena studenta
+    for (int i = 0; i < studentuKiekis; i++)
     {
         studentas naujasStudentas;
+        int pazymiuKiekis = rand() % 10 + 1;
         
         if (parinktis != 3)
         {
@@ -116,17 +131,15 @@ int main()
             naujasStudentas.pavarde = didziosios(naujasStudentas.pavarde); // Kiekviena pavardes raide paverciama didziaja, kad atrodytu tvarkingiau isvedant duomenis
         }
 
-        j = 0;
-
         if (parinktis == 1)
         {
-            while (true) // Ciklas, einantis per visus kiekvieno studento pazymius
+            for (int j = 0; j < pazymiuKiekis; j++)
             {
                 string ivedimas;
                 
                 do
                 {
-                    cout << "Iveskite " << i + 1 << "-o studento " << j + 1 << "-aji pazymi (jei nenorite vesti daugiau pazymiu, iveskite \"stop\" ir spauskite \"Enter\"): ";
+                    cout << "Iveskite " << i + 1 << "-o studento " << j + 1 << "-aji pazymi: ";
                     cin >> ivedimas;
                     if (didziosios(ivedimas) == "STOP" && cin.peek() == '\n') // Jei vartotojas iraso zodi "stop", pazymiu ivestis baigiasi
                     {
@@ -157,19 +170,19 @@ int main()
                     }
                 } while (!teisingasIvedimas); // Vykdome cikla kol ivedimas yra neteisingas
 
-                j++;
                 if (didziosios(ivedimas) == "STOP" && cin.peek() == '\n')
                 {
                     break;
                 }
             }
+
             do
             {
                 string ivedimas;
 
                 cout << "Iveskite " << i + 1 << "-o studento egzamino pazymi: ";
                 cin >> ivedimas;
-                    
+                        
                 teisingasIvedimas = true;
 
                 if (ivedimas.size() < 1 || (ivedimas.size() > 2 || (ivedimas.size() == 2 && (ivedimas[0] != '1' || ivedimas[1] != '0')) || cin.peek() != '\n') || !isdigit(ivedimas[0])) // Tikriname, ar vartotojo ivedima sudaro vienas arba du simboliai, jei ji sudaro du simboliai tikriname ar pirmas simbolis - vienetas, o antras - nulis, ir tikriname ar po pirmo skaiciaus iskart eina naujos eilutes simbolis
@@ -193,76 +206,50 @@ int main()
                         }
                     }
             } while (!teisingasIvedimas); // Vykdome cikla kol ivedimas yra neteisingas
-            i++;
         }
 
         if (parinktis == 2)
         {
-            while (true) // Ciklas, generuojantis studento pazymius
-            {
-                do
+                for (int j = 0; j < pazymiuKiekis; j++)
                 {
                     int pazymys = generuotiPazymi();
                     
                     naujasStudentas.nd.push_back(pazymys); // Sugeneruota pazymi pridedame i vektoriu
-                    
+                        
                     cout << "Sugeneruotas " << i + 1 << "-o studento " << j + 1 << "-aji pazymys: " << pazymys << endl;
-
-                    cout << "Jei norite sugeneruoti dar viena pazymi, iveskite \'+\' ir spauskite \'Enter\'. Jei norite baigti pazymiu generavima, iveskite bet koki kita simboli ir spauskite \'Enter\': "; cin >> testiPrograma; // Klausiame vartotojo ar jis nores generuoti dar viena pazymi
-
-                    j++;
-                } while (testiPrograma == '+' && cin.peek() == '\n'); // Vykdome cikla kol vartotojas nori generuoti daugiau pazymiu
+                }
                 
                 int pazymys = generuotiPazymi();
 
                 naujasStudentas.egz = pazymys;
 
                 cout << "Sugeneruotas " << i + 1 << "-o studento egzamino pazymys: " << pazymys << endl;
-
-                break;
-            }
-            i++;
         }
 
         if (parinktis == 3)
         {
-            while (true) // Ciklas, generuojantis studento vardus, pavardes ir pazymius
-            {
                 naujasStudentas.vardas = generuotiVarda(); // Sugeneruota varda priskiriame naujam studentui
                 naujasStudentas.pavarde = generuotiPavarde(); // Sugeneruota pavarde priskiriame naujam studentui
 
                 cout << "Sugeneruoti " << i + 1 << "-o studento vardas ir pavarde: " << naujasStudentas.vardas << " " << naujasStudentas.pavarde << endl;
-                do
+                for (int j = 0; j < pazymiuKiekis; j++)
                 {
                     int pazymys = generuotiPazymi();
                     
                     naujasStudentas.nd.push_back(pazymys); // Sugeneruota pazymi pridedame i vektoriu
 
                     cout << "Sugeneruotas " << i + 1 << "-o studento " << j + 1 << "-asis pazymys: " << pazymys << endl;
-
-                    cout << "Jei norite sugeneruoti dar viena pazymi, iveskite \'+\' ir spauskite \'Enter\'. Jei norite baigti pazymiu generavima, iveskite bet koki kita simboli ir spauskite \'Enter\': "; cin >> testiPrograma; // Klausiame vartotojo ar jis nores generuoti dar viena pazymi
-
-                    j++;
-                } while (testiPrograma == '+' && cin.peek() == '\n'); // Vykdome cikla kol vartotojas nori generuoti daugiau pazymiu
+                }
                 
                 int pazymys = generuotiPazymi();
 
                 naujasStudentas.egz = pazymys;
 
                 cout << "Sugeneruotas " << i + 1 << "-o studento egzamino pazymys: " << pazymys << endl;
-
-                break;
-            }
-            i++;
         }
 
-        stud.push_back(naujasStudentas); // Ikeliame studento duomenis i vektoriu
-
-        cin.clear();    // Isvalome inputa nuo klaidu ir ignoruojame likusia eilute
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-        cout << "Ar norite prideti dar viena studenta? Jei taip, iveskite \'+\' ir spauskite \"Enter\", jei ne, iveskite bet koki kita simboli ir spauskite \"Enter\": "; cin >> testiPrograma; // Klausiame vartotojo, ar jis nores i vektoriu prideti dar vieno studento duomenis
-    } while (testiPrograma == '+' && cin.peek() == '\n');
+        stud.push_back(naujasStudentas);
+    }
 
     if (skaiciavimoBudas == "V") {
         for (int i = 0; i < stud.size(); i++) // Jei vartotojas galutinio balo skaiciavimui pasirinko naudoti pazymiu vidurki, tuomet skaiciuojame kiekvieno studento vidurki, o paskui ir galutini bala 
