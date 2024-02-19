@@ -22,20 +22,33 @@ int m; // Studentu skaicius
 struct studentas
 {
     string vardas, pavarde;
-    int* nd = new int[n];
+    int* nd = nullptr;
     int egz;
     double vidurkis, mediana, galutinis;
 };
 
 int main()
 {
-    cout << "Iveskite studentu kieki: "; cin >> m; // Prasidejus programos vykdymui vartotojo prasome ivesti studentu kieki
-    cout << "Iveskite vieno studento pazymiu kieki: "; cin >> n; // Prasidejus programos vykdymui vartotojo prasome ivesti kiekvieno student pazymiu kieki
-
-    studentas* stud = new studentas[m]; // Studentu strukturu masyvas dinaminėje atmintyje
     string skaiciavimoBudas; // Kintamasis, kuriame saugomas vartotojo pasirinkimas, kaip skaiciuoti galutini bala, naudojant vidurki ar mediana
-    int tarpai, parinktis;
+    int l, k, tarpai, parinktis, papildymas;
     bool teisingasIvedimas;
+
+    do // Prasome studento ivesti skaiciu, nuo kurio priklausys, kaip bus vykdoma programa
+    {
+        cout << "Iveskite norima studentu kieki (nuo 1 iki 10 imtinai): "; cin >> m;
+
+        teisingasIvedimas = true;
+
+        if (m < 1 || m > 10 || cin.peek() != '\n')
+        {
+            teisingasIvedimas = false;
+            cout << "Klaidingi duomenys. Iveskite skaiciu nuo 1 iki 10 imtinai." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    } while (!teisingasIvedimas);
+
+    studentas* stud = new studentas[m];
 
     srand(time(0));
 
@@ -76,53 +89,161 @@ int main()
         }
     } while (!teisingasIvedimas);
 
-    for (int i = 0; i < m; i++) // Ciklas, einantis per kiekviena studenta
+    l = 0;
+    papildymas = 0;
+
+    while (true)
     {
-        if (parinktis != 3)
+        m += papildymas;
+
+        for (int i = l; i < m; i++) // Ciklas, einantis per kiekviena studenta
         {
-            do
+            int randomPazymiuKiekis = rand() % 10 + 1;
+
+            if (parinktis != 3)
             {
-                cout << "Iveskite studento varda: "; cin >> stud[i].vardas; // Prasome vartotojo ivesti kiekvieno studento varda tol, kol tas vardas yra vienas zodis, sudarytas tik is raidziu
-                teisingasIvedimas = true;
-
-                tarpai = tarpuSkaicius(stud[i].vardas); // Randame ivesties tarpu skaiciu
-                if (tarpai != 0 || !tikRaides(stud[i].vardas) || cin.peek() != '\n') // Jei tarpu skaicius nera nulis arba vardas sudarytas ne tik is raidziu, arba sekantis po zodzio esantis simbolis nera naujos eilutes simbolis, pranesame apie klaida, laikome ivedima neteisingu
-                {
-                    teisingasIvedimas = false;
-                    cout << "Klaidingi duomenys. Vardas turi buti vienas zodis, sudarytas tik is raidziu (jei studentas turi du vardus, iveskite tik viena is ju)." << endl;
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignoruojama viskas, kas ivesta po pirmojo zodzio
-                }
-            } while (!teisingasIvedimas); // Vykdome cikla kol ivedimas neteisingas
-            do
-            {
-                cout << "Iveskite studento pavarde: "; cin >> stud[i].pavarde; // Prasome vartotojo ivesti kiekvieno studento pavarde tol, kol ta pavarde yra vienas zodis, sudarytas tik is raidziu
-                teisingasIvedimas = true;
-
-                tarpai = tarpuSkaicius(stud[i].pavarde);
-                if (tarpai != 0 || !tikRaides(stud[i].pavarde) || cin.peek() != '\n') // Jei tarpu skaicius nera nulis arba vardas sudarytas ne tik is raidziu, arba sekantis po zodzio esantis simbolis nera naujos eilutes simbolis, pranesame apie klaida, laikome ivedima neteisingu
-                {
-                    teisingasIvedimas = false;
-                    cout << "Klaidingi duomenys. Pavarde turi buti vienas zodis, sudarytas tik is raidziu." << endl;
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignoruojama viskas, kas ivesta po pirmojo zodzio
-                }
-                
-            } while (!teisingasIvedimas); // Vykdome cikla kol ivedimas neteisingas
-
-            stud[i].vardas = didziosios(stud[i].vardas); // Kiekviena vardo raide paverciama didziaja, kad atrodytu tvarkingiau isvedant duomenis
-                
-            stud[i].pavarde = didziosios(stud[i].pavarde); // Kiekviena pavardes raide paverciama didziaja, kad atrodytu tvarkingiau isvedant duomenis
-        }
-
-        if (parinktis == 1)
-        {
-            for(int j = 0; j < n; j++) // Ciklas, einantis per visus kiekvieno studento pazymius
-            {
-                string ivedimas;
                 do
                 {
-                    cout << "Iveskite " << i + 1 << "-o studento " << j + 1 << "-aji pazymi: ";
-                    cin >> ivedimas;
+                    cout << "Iveskite studento varda: "; cin >> stud[i].vardas; // Prasome vartotojo ivesti kiekvieno studento varda tol, kol tas vardas yra vienas zodis, sudarytas tik is raidziu
+                    teisingasIvedimas = true;
 
+                    tarpai = tarpuSkaicius(stud[i].vardas); // Randame ivesties tarpu skaiciu
+                    if (tarpai != 0 || !tikRaides(stud[i].vardas) || cin.peek() != '\n') // Jei tarpu skaicius nera nulis arba vardas sudarytas ne tik is raidziu, arba sekantis po zodzio esantis simbolis nera naujos eilutes simbolis, pranesame apie klaida, laikome ivedima neteisingu
+                    {
+                        teisingasIvedimas = false;
+                        cout << "Klaidingi duomenys. Vardas turi buti vienas zodis, sudarytas tik is raidziu (jei studentas turi du vardus, iveskite tik viena is ju)." << endl;
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignoruojama viskas, kas ivesta po pirmojo zodzio
+                    }
+                } while (!teisingasIvedimas); // Vykdome cikla kol ivedimas neteisingas
+                do
+                {
+                    cout << "Iveskite studento pavarde: "; cin >> stud[i].pavarde; // Prasome vartotojo ivesti kiekvieno studento pavarde tol, kol ta pavarde yra vienas zodis, sudarytas tik is raidziu
+                    teisingasIvedimas = true;
+
+                    tarpai = tarpuSkaicius(stud[i].pavarde);
+                    if (tarpai != 0 || !tikRaides(stud[i].pavarde) || cin.peek() != '\n') // Jei tarpu skaicius nera nulis arba vardas sudarytas ne tik is raidziu, arba sekantis po zodzio esantis simbolis nera naujos eilutes simbolis, pranesame apie klaida, laikome ivedima neteisingu
+                    {
+                        teisingasIvedimas = false;
+                        cout << "Klaidingi duomenys. Pavarde turi buti vienas zodis, sudarytas tik is raidziu." << endl;
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignoruojama viskas, kas ivesta po pirmojo zodzio
+                    }
+                    
+                } while (!teisingasIvedimas); // Vykdome cikla kol ivedimas neteisingas
+
+                stud[i].vardas = didziosios(stud[i].vardas); // Kiekviena vardo raide paverciama didziaja, kad atrodytu tvarkingiau isvedant duomenis
+                    
+                stud[i].pavarde = didziosios(stud[i].pavarde); // Kiekviena pavardes raide paverciama didziaja, kad atrodytu tvarkingiau isvedant duomenis
+            }
+
+            if (parinktis == 1)
+            {
+                do
+                {
+                    cout << "Kiek pazymiu norite ivesti siam studentui? (Irasykite skaiciu nuo 1 iki 10 imtinai): "; cin >> n;
+
+                    teisingasIvedimas = true;
+
+                    if (n > 10 || n < 1 || cin.peek() != '\n')
+                    {
+                        teisingasIvedimas = false;
+                        cout << "Klaidingi duomenys. Iveskite skaiciu nuo 1 iki 10 imtinai." << endl;
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    }
+                } while (!teisingasIvedimas);
+
+                stud[i].nd = new int[n];
+
+                k = 0;
+                papildymas = 0;
+
+                while (true)
+                {
+                    n += papildymas;
+
+                    for(int j = k; j < n; j++) // Ciklas, einantis per visus kiekvieno studento pazymius
+                    {
+                        string ivedimas;
+
+                        do
+                        {
+                            cout << "Iveskite " << i + 1 << "-o studento " << j + 1 << "-aji pazymi: ";
+                            cin >> ivedimas;
+
+                            teisingasIvedimas = true;
+
+                            if (ivedimas.size() < 1 || (ivedimas.size() > 2 || (ivedimas.size() == 2 && (ivedimas[0] != '1' || ivedimas[1] != '0')) || cin.peek() != '\n') || !isdigit(ivedimas[0])) // Tikriname, ar vartotojo ivedima sudaro vienas arba du simboliai, jei ji sudaro du simboliai tikriname ar pirmas simbolis - vienetas, o antras - nulis, ir tikriname ar po pirmo skaiciaus iskart eina naujos eilutes simbolis
+                            {
+                                teisingasIvedimas = false; // Jei atsitinka taip, kad kazkuris is reikalavimu yra patenkinamas, tuomet pranesame apie klaida, isvalome klaidu flag'us ir ignoruojame likusia eilutes dali
+                                cout << "Klaidingi duomenys. Prasome ivesti viena sveikaji skaiciu nuo 1 iki 10." << endl;
+                                cin.clear();
+                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            }
+                            else
+                            {
+                                int pazymys = stoi(ivedimas); // Paverciame ivesta string'a i int'a
+                                if (pazymys < 1 || pazymys > 10) // Jei tas skaicius nera tarp 1 ir 10 imtinai, pranesame apie klaida
+                                {
+                                    teisingasIvedimas = false;
+                                    cout << "Klaidingi duomenys. Prasome ivesti viena sveikaji skaiciu nuo 1 iki 10." << endl;
+                                }
+                                else
+                                {
+                                    stud[i].nd[j] = pazymys; // Jei skaicius yra tarp 1 ir 10 imtinai, priskiriame ji i atitinkamo studento pazymiu masyva
+                                }
+                            }
+                        } while (!teisingasIvedimas); // Vykdome cikla kol ivedimas yra neteisingas
+
+                        k = j + 1;
+                    }
+
+                    do
+                    {
+                        cout << "Jei norite daugiau pazymiu, iveskite papildomu pazymiu kieki (Irasykite skaiciu nuo 1 iki 10 imtinai), jei ne, iveskite bet koki simboli ir spauskite \"Enter\": "; // Klausiame, ar vartotojas nori ivesti daugiau pazymiu
+                        cin >> papildymas;
+
+                        teisingasIvedimas = true;
+
+                        if (papildymas == 0)
+                        {
+                            cin.clear();
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            break;
+                        }
+                        else if (papildymas > 10 || papildymas < 1)
+                        {
+                            teisingasIvedimas = false;
+                            cout << "Klaidingi duomenys. Iveskite skaiciu nuo 1 iki 10 imtinai." << endl;
+                            cin.clear();
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        }
+                        else // Pakeiciame masyvo dydi
+                        {
+                            int* new_nd = new int[n + papildymas];
+
+                            for (int j = 0; j < n; j++)
+                            {
+                                new_nd[j] = stud[i].nd[j];
+                            }
+
+                            delete[] stud[i].nd;
+
+                            stud[i].nd = new_nd;
+                        }
+                    } while (!teisingasIvedimas);
+
+                    if (papildymas == 0)
+                    {
+                        break;
+                    }
+                }
+
+                do
+                {
+                    string ivedimas;
+                    cout << "Iveskite studento egzamino pazymi: ";
+                    cin >> ivedimas;
+                    
                     teisingasIvedimas = true;
 
                     if (ivedimas.size() < 1 || (ivedimas.size() > 2 || (ivedimas.size() == 2 && (ivedimas[0] != '1' || ivedimas[1] != '0')) || cin.peek() != '\n') || !isdigit(ivedimas[0])) // Tikriname, ar vartotojo ivedima sudaro vienas arba du simboliai, jei ji sudaro du simboliai tikriname ar pirmas simbolis - vienetas, o antras - nulis, ir tikriname ar po pirmo skaiciaus iskart eina naujos eilutes simbolis
@@ -142,108 +263,127 @@ int main()
                         }
                         else
                         {
-                            stud[i].nd[j] = pazymys; // Jei skaicius yra tarp 1 ir 10 imtinai, priskiriame ji i atitinkamo studento pazymiu masyva
+                            stud[i].egz = pazymys; // Jei skaicius yra tarp 1 ir 10 imtinai, priskiriame ji kaip atitinkamo studento egzamino pazymi
                         }
                     }
                 } while (!teisingasIvedimas); // Vykdome cikla kol ivedimas yra neteisingas
             }
-            do
-            {
-                string ivedimas;
-                cout << "Iveskite studento egzamino pazymi: ";
-                cin >> ivedimas;
-                
-                teisingasIvedimas = true;
 
-                if (ivedimas.size() < 1 || (ivedimas.size() > 2 || (ivedimas.size() == 2 && (ivedimas[0] != '1' || ivedimas[1] != '0')) || cin.peek() != '\n') || !isdigit(ivedimas[0])) // Tikriname, ar vartotojo ivedima sudaro vienas arba du simboliai, jei ji sudaro du simboliai tikriname ar pirmas simbolis - vienetas, o antras - nulis, ir tikriname ar po pirmo skaiciaus iskart eina naujos eilutes simbolis
+            if (parinktis == 2)
+            {
+                stud[i].nd = new int[randomPazymiuKiekis];
+
+                for(int j = 0; j < randomPazymiuKiekis; j++) // Ciklas, einantis per visus kiekvieno studento pazymius
                 {
-                    teisingasIvedimas = false; // Jei atsitinka taip, kad kazkuris is reikalavimu yra patenkinamas, tuomet pranesame apie klaida, isvalome klaidu flag'us ir ignoruojame likusia eilutes dali
-                    cout << "Klaidingi duomenys. Prasome ivesti viena sveikaji skaiciu nuo 1 iki 10." << endl;
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    int pazymys = generuotiPazymi(); // Sugeneruojame atsitiktini pazymi
+                    stud[i].nd[j] = pazymys; // Idedame ji i masyva
+                    cout << "Sugeneruotas " << i + 1 << "-o studento " << j + 1 << "-aji pazymys: " << pazymys << endl;
+                }
+
+                int pazymys = generuotiPazymi(); // Sugeneruojame dar viena pazymi
+
+                stud[i].egz = pazymys; // Priskiriame ji i egzamino pazymio vieta
+
+                cout << "Sugeneruotas " << i + 1 << "-o studento egzamino pazymys: " << pazymys << endl;
+
+                n = randomPazymiuKiekis;
+            }
+
+            if (parinktis == 3)
+            {
+                stud[i].nd = new int[randomPazymiuKiekis];
+
+                stud[i].vardas = generuotiVarda(); // Sugeneruota varda priskiriame studentui
+                stud[i].pavarde = generuotiPavarde(); // Sugeneruota pavarde priskiriame studentui
+
+                cout << "Sugeneruoti " << i + 1 << "-o studento vardas ir pavarde: " << stud[i].vardas << " " << stud[i].pavarde << endl;
+
+                for(int j = 0; j < randomPazymiuKiekis; j++) // Ciklas, einantis per visus kiekvieno studento pazymius
+                {
+                    int pazymys = generuotiPazymi(); // Sugeneruojame atsitiktini pazymi
+                    cout << "Sugeneruotas " << i + 1 << "-o studento " << j + 1 << "-aji pazymys: " << pazymys << endl;
+                    stud[i].nd[j] = pazymys; // Ji pridedame i masyva
+                }
+
+                int pazymys = generuotiPazymi(); // Sugeneruojame dar viena pazymi
+
+                stud[i].egz = pazymys; // Priskiriame ji i egzamino pazymio vieta
+
+                cout << "Sugeneruotas " << i + 1 << "-o studento egzamino pazymys: " << pazymys << endl;
+
+                n = randomPazymiuKiekis;
+            }
+
+            l = i + 1;
+
+            if (skaiciavimoBudas == "V")
+            {
+                stud[i].vidurkis = accumulate(stud[i].nd, stud[i].nd + n, 0.0) / n;
+                stud[i].galutinis = 0.4 * stud[i].vidurkis + 0.6 * stud[i].egz;
+            }
+            else
+            {
+                if (n % 2 == 0)
+                {
+                    stud[i].mediana = (stud[i].nd[n / 2] + stud[i].nd[n / 2 - 1]) / 2.0; // Jei pazymiu kiekis yra lyginis skaicius, mediana skaiciuojame rasdami dvieju viduriniu pazymiu aritmetini vidurki
                 }
                 else
                 {
-                    int pazymys = stoi(ivedimas); // Paverciame ivesta string'a i int'a
-                    if (pazymys < 1 || pazymys > 10) // Jei tas skaicius nera tarp 1 ir 10 imtinai, pranesame apie klaida
-                    {
-                        teisingasIvedimas = false;
-                        cout << "Klaidingi duomenys. Prasome ivesti viena sveikaji skaiciu nuo 1 iki 10." << endl;
-                    }
-                    else
-                    {
-                        stud[i].egz = pazymys; // Jei skaicius yra tarp 1 ir 10 imtinai, priskiriame ji kaip atitinkamo studento egzamino pazymi
-                    }
+                    stud[i].mediana = stud[i].nd[n / 2]; // Jei pazymiu kiekis yra nelyginis skaicius, medianai priskiriame vidurini pazymi is pazymiu aibes
                 }
-            } while (!teisingasIvedimas); // Vykdome cikla kol ivedimas yra neteisingas
+                stud[i].galutinis = 0.4 * stud[i].mediana + 0.6 * stud[i].egz; // Suskaiciuojame studento galutini bala, naudodami pazymiu mediana
+            }
         }
 
-        if (parinktis == 2)
+        do
         {
-            int pazymys;
+            cout << "Jei norite daugiau studentu, iveskite papildomu studentu kieki (Irasykite skaiciu nuo 1 iki 10 imtinai), jei ne, iveskite bet koki simboli ir spauskite \"Enter\": "; // Klausiame, ar vartotojas nori daugiau studentu
+            cin >> papildymas;
 
-            for(int j = 0; j < n; j++) // Ciklas, einantis per visus kiekvieno studento pazymius
+            teisingasIvedimas = true;
+
+            if (papildymas == 0)
             {
-                pazymys = generuotiPazymi(); // Sugeneruojame atsitiktini pazymi
-                cout << "Sugeneruotas " << i + 1 << "-o studento " << j + 1 << "-aji pazymys: " << pazymys << endl;
-                stud[i].nd[j] = pazymys; // Idedame ji i masyva
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                break;
             }
+            else if (papildymas > 10 || papildymas < 1)
+            {
+                teisingasIvedimas = false;
+                cout << "Klaidingi duomenys. Iveskite skaiciu nuo 1 iki 10 imtinai." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+            else // Keiciame masyvo dydi
+            {
+                studentas* new_studentas = new studentas[m + papildymas];
 
-            pazymys = generuotiPazymi(); // Sugeneruojame dar viena pazymi
+                for (int j = 0; j < m; j++)
+                {
+                    new_studentas[j] = stud[j];
+                }
 
-            stud[i].egz = pazymys; // Priskiriame ji i egzamino pazymio vieta
+                delete[] stud;
 
-            cout << "Sugeneruotas " << i + 1 << "-o studento egzamino pazymys: " << pazymys << endl;
-        }
+                stud = new_studentas;
+            }
+        } while (!teisingasIvedimas);
 
-        if (parinktis == 3)
+        if (papildymas == 0)
         {
-            int pazymys;
-
-            stud[i].vardas = generuotiVarda(); // Sugeneruota varda priskiriame studentui
-            stud[i].pavarde = generuotiPavarde(); // Sugeneruota pavarde priskiriame studentui
-
-            cout << "Sugeneruoti " << i + 1 << "-o studento vardas ir pavarde: " << stud[i].vardas << " " << stud[i].pavarde << endl;
-
-            for(int j = 0; j < n; j++) // Ciklas, einantis per visus kiekvieno studento pazymius
-            {
-                pazymys = generuotiPazymi(); // Sugeneruojame atsitiktini pazymi
-                cout << "Sugeneruotas " << i + 1 << "-o studento " << j + 1 << "-aji pazymys: " << pazymys << endl;
-                stud[i].nd[j] = pazymys; // Ji pridedame i masyva
-            }
-
-            pazymys = generuotiPazymi(); // Sugeneruojame dar viena pazymi
-
-            stud[i].egz = pazymys; // Priskiriame ji i egzamino pazymio vieta
-
-            cout << "Sugeneruotas " << i + 1 << "-o studento egzamino pazymys: " << pazymys << endl;
+            break;
         }
     }
 
-    if (skaiciavimoBudas == "V") {
-        for (int i = 0; i < m; i++) // Jei vartotojas galutinio balo skaiciavimui pasirinko naudoti pazymiu vidurki, tuomet skaiciuojame kiekvieno studento vidurki, o paskui ir galutini bala 
-        {
-            stud[i].vidurkis = accumulate(stud[i].nd, stud[i].nd + n, 0.0) / n;
-            stud[i].galutinis = 0.4 * stud[i].vidurkis + 0.6 * stud[i].egz;
-        }
-        cout << endl;
+    cout << endl;
+
+    if (skaiciavimoBudas == "V")
+    {
         cout << left << setw(20) << "Vardas" << setw(20) << "Pavarde" << setw(20) << "Galutinis (Vid.)" << endl; // Tvarkingai isvedame antrastine eilute
     }
     else
     {
-        for (int i = 0; i < m; i++) // Jei vartotojas galutinio balo skaiciavimui pasirinko naudoti pazymiu mediana, tuomet skaiciuojame kiekvieno studento pazymiu mediana, o paskui ir galutini bala
-        {
-            if (n % 2 == 0)
-            {
-                stud[i].mediana = (stud[i].nd[n / 2] + stud[i].nd[n / 2 - 1]) / 2.0; // Jei pazymiu kiekis yra lyginis skaicius, mediana skaiciuojame rasdami dvieju viduriniu pazymiu aritmetini vidurki
-            }
-            else
-            {
-                stud[i].mediana = stud[i].nd[n / 2]; // Jei pazymiu kiekis yra nelyginis skaicius, medianai priskiriame vidurini pazymi is pazymiu aibes
-            }
-            stud[i].galutinis = 0.4 * stud[i].mediana + 0.6 * stud[i].egz; // Suskaiciuojame studento galutini bala, naudodami pazymiu mediana
-        }
-        cout << endl;
         cout << left << setw(20) << "Vardas" << setw(20) << "Pavarde" << setw(20) << "Galutinis (Med.)" << endl; // Tvarkingai isvedame antrastine eilute
     }
 
